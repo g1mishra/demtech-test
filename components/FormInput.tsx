@@ -4,8 +4,17 @@ type FormInputProps = {
   type: Extract<FieldType, "text" | "number" | "email">;
   placeholder?: string;
   name?: string;
+  required?: boolean;
 };
 
-export const FormInput = ({ type, placeholder, name }: FormInputProps) => {
-  return <input type={type} placeholder={placeholder} name={name} className="form-input" />;
+export const FormInput = ({ type, placeholder, name, required }: FormInputProps) => {
+  return (
+    <input
+      type={type}
+      placeholder={placeholder}
+      name={name}
+      required={required}
+      className="form-input"
+    />
+  );
 };

@@ -10,6 +10,7 @@ export type FormField = {
   label: string;
   placeholder?: string;
   options?: Option[];
+  required?: boolean;
 };
 
 export type ButtonVariant = "primary" | "secondary";

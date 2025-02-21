@@ -64,7 +64,8 @@ body {
 }
 
 .form-field label {
-  display: block;
+  display: flex;
+  align-items: baseline;
   margin-bottom: 8px;
   font-weight: bold;
 }
@@ -172,4 +173,9 @@ body {
   gap: 10px;
   justify-content: flex-start;
   margin-top: 20px;
+}
+
+.required-mark {
+  color: #dc3545;
+  margin-left: 4px;
 }

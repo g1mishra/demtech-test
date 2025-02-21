@@ -5,6 +5,7 @@ import { FormRadio } from "./components/FormRadio";
 import { FormCheckbox } from "./components/FormCheckbox";
 import { FormButton } from "./components/FormButton";
 import type { FormConfig, FieldType } from "./types/form.types";
+import toast from "react-hot-toast";
 
 type Props = {
   HeadingBlock: { title: string };
@@ -56,6 +57,14 @@ export const config: Config<Props> = {
               type: "text",
               label: "Placeholder",
             },
+            required: {
+              type: "radio",
+              label: "Required",
+              options: [
+                { label: "Yes", value: true },
+                { label: "No", value: false },
+              ],
+            },
             options: {
               type: "array",
               label: "Options (Radio/Checkbox/Select)",
@@ -100,33 +109,62 @@ export const config: Config<Props> = {
       },
 
       render: ({ items, buttons }) => {
+        const handleSubmit = (e: React.FormEvent) => {
+          e.preventDefault();
+          const formData = new FormData(e.target as HTMLFormElement);
+          const data = Object.fromEntries(formData.entries());
+          console.log("Form Data", data);
+          toast.success("Form submitted!");
+        };
         return (
-          <form className="puck-form">
+          <form className="puck-form" onSubmit={handleSubmit}>
             {items?.map((item, index) => {
-              const { type, label, options, placeholder } = item;
+              const { type, label, options, placeholder, required } = item;
               const fieldName = `field-${index}`;
 
               return (
                 <div key={index} className="form-field">
-                  <label>{label}</label>
+                  <label>
+                    {label}
+                    {required && <span className="required-mark">*</span>}
+                  </label>
                   {type === "text" && (
-                    <FormInput type="text" placeholder={placeholder} name={fieldName} />
+                    <FormInput
+                      type="text"
+                      placeholder={placeholder}
+                      name={fieldName}
+                      required={required}
+                    />
                   )}
                   {type === "number" && (
-                    <FormInput type="number" placeholder={placeholder} name={fieldName} />
+                    <FormInput
+                      type="number"
+                      placeholder={placeholder}
+                      name={fieldName}
+                      required={required}
+                    />
                   )}
                   {type === "email" && (
-                    <FormInput type="email" placeholder={placeholder} name={fieldName} />
+                    <FormInput
+                      type="email"
+                      placeholder={placeholder}
+                      name={fieldName}
+                      required={required}
+                    />
                   )}
                   {type === "radio" && options && <FormRadio options={options} name={fieldName} />}
                   {type === "checkbox" && options && (
                     <FormCheckbox options={options} name={fieldName} />
                   )}
                   {type === "select" && options && (
-                    <FormSelect options={options} name={fieldName} />
+                    <FormSelect options={options} name={fieldName} required={required} />
                   )}
                   {type === "textarea" && (
-                    <textarea placeholder={placeholder} name={fieldName}></textarea>
+                    <textarea
+                      placeholder={placeholder}
+                      name={fieldName}
+                      required={required}
+                    ></textarea>
                   )}
                 </div>
               );
@@ -151,11 +189,13 @@ export const config: Config<Props> = {
             type: "text",
             label: "Name",
             placeholder: "Enter your name",
+            required: true,
           },
           {
             type: "email",
             label: "Email",
             placeholder: "Enter your email",
+            required: true,
           },
           {
             type: "select",
