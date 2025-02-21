@@ -29,14 +29,10 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ puckPath: string[] }>;
-}) {
+export default async function Page({ params }: { params: Promise<{ puckPath: string[] }> }) {
   const { puckPath = [] } = await params;
   const path = `/${puckPath.join("/")}`;
-  const data = getPage(path);
+  const data = await getPage(path);
 
   return <Client path={path} data={data || {}} />;
 }

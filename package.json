@@ -11,6 +11,7 @@
   "dependencies": {
     "@measured/puck": "^0.18.2",
     "classnames": "^2.3.2",
+    "mongodb": "^6.13.1",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -1,25 +1,27 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import fs from "fs";
+import clientPromise from "../../../lib/mongodb";
 
 export async function POST(request: Request) {
-  const payload = await request.json();
+  try {
+    const payload = await request.json();
+    const client = await clientPromise;
+    const db = client.db("puckCMS");
+    const pagesCollection = db.collection("pages");
 
-  const existingData = JSON.parse(
-    fs.existsSync("database.json")
-      ? fs.readFileSync("database.json", "utf-8")
-      : "{}"
-  );
+    // Update or insert the page data
+    await pagesCollection.updateOne(
+      { path: payload.path },
+      { $set: { path: payload.path, data: payload.data } },
+      { upsert: true }
+    );
 
-  const updatedData = {
-    ...existingData,
-    [payload.path]: payload.data,
-  };
+    // Purge Next.js cache
+    revalidatePath(payload.path);
 
-  fs.writeFileSync("database.json", JSON.stringify(updatedData));
-
-  // Purge Next.js cache
-  revalidatePath(payload.path);
-
-  return NextResponse.json({ status: "ok" });
+    return NextResponse.json({ status: "ok" });
+  } catch (error) {
+    console.error("Database error:", error);
+    return NextResponse.json({ error: "Failed to update page data" }, { status: 500 });
+  }
 }

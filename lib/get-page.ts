@@ -1,11 +1,15 @@
 import { Data } from "@measured/puck";
-import fs from "fs";
+import clientPromise from "./mongodb";
 
-// Replace with call to your database
-export const getPage = (path: string) => {
-  const allData: Record<string, Data> | null = fs.existsSync("database.json")
-    ? JSON.parse(fs.readFileSync("database.json", "utf-8"))
-    : null;
+export async function getPage(path: string): Promise<Data | null> {
+  try {
+    const client = await clientPromise;
+    const db = client.db("puckCMS");
+    const page = await db.collection("pages").findOne({ path });
 
-  return allData ? allData[path] : null;
-};
+    return page ? page.data : null;
+  } catch (error) {
+    console.error("Failed to get page:", error);
+    return null;
+  }
+}
